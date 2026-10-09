@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>California Housing AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <!-- =========================================
+         Sidebar
+    ========================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                <span>⌂</span>
+            </div>
+
+            <div>
+                <h2>Housing<span>AI</span></h2>
+                <p>Prediction Engine</p>
+            </div>
+
+        </div>
+
+
+        <nav class="navigation">
+
+            <a href="#" class="nav-item active">
+                <span class="nav-icon">◈</span>
+                Dashboard
+            </a>
+
+            <a href="#" class="nav-item">
+                <span class="nav-icon">◉</span>
+                Prediction
+            </a>
+
+            <a href="#" class="nav-item">
+                <span class="nav-icon">▣</span>
+                Model Info
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="model-status">
+
+                <div class="status-dot"></div>
+
+                <div>
+                    <strong>Model Online</strong>
+                    <small>Ready for prediction</small>
+                </div>
+
+            </div>
+
+            <p class="version">California Housing ML v1.0</p>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================================
+         Main Content
+    ========================================== -->
+
+    <main class="main-content">
+
+
+        <!-- Top Bar -->
+
+        <header class="topbar">
+
+            <div>
+
+                <p class="breadcrumb">
+                    Dashboard / Prediction
+                </p>
+
+                <h1>California Housing Predictor</h1>
+
+            </div>
+
+
+            <div class="top-status">
+
+                <span class="live-dot"></span>
+
+                <span>LIVE MODEL</span>
+
+            </div>
+
+        </header>
+
+
+        <!-- Hero -->
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <div class="ai-badge">
+                    ✦ MACHINE LEARNING
+                </div>
+
+                <h2>
+                    Predict California<br>
+                    <span>House Values</span>
+                </h2>
+
+                <p>
+                    Enter property characteristics and let the trained
+                    machine learning model estimate the median house value.
+                </p>
+
+            </div>
+
+
+            <div class="hero-graphic">
+
+                <div class="orbit orbit-one"></div>
+                <div class="orbit orbit-two"></div>
+
+                <div class="house-icon">
+                    ⌂
+                </div>
+
+                <div class="floating-card card-one">
+                    <span>MODEL</span>
+                    <strong>ML</strong>
+                </div>
+
+                <div class="floating-card card-two">
+                    <span>STATUS</span>
+                    <strong>READY</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Dashboard Grid -->
+
+        <div class="dashboard-grid">
+
+
+            <!-- =====================================
+                 Prediction Form
+            ====================================== -->
+
+            <section class="prediction-card">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <div class="section-label">
+                            PROPERTY INPUT
+                        </div>
+
+                        <h3>Property Characteristics</h3>
+
+                    </div>
+
+                    <div class="feature-count">
+                        {{ columns|length }} FEATURES
+                    </div>
+
+                </div>
+
+
+                <form action="/predict"
+                      method="POST"
+                      id="predictionForm">
+
+
+                    <div class="input-grid">
+
+                        {% for column in columns %}
+
+                        <div class="input-card">
+
+                            <div class="input-number">
+                                {{ "%02d" | format(loop.index) }}
+                            </div>
+
+                            <div class="input-content">
+
+                                <label for="{{ column }}">
+                                    {{ column.replace('_', ' ').title() }}
+                                </label>
+
+                                <input
+                                    type="number"
+                                    step="any"
+                                    name="{{ column }}"
+                                    id="{{ column }}"
+                                    placeholder="Enter value"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="form-actions">
+
+                        <button
+                            type="button"
+                            class="clear-btn"
+                            id="clearBtn">
+                            Clear
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="predict-btn"
+                            id="predictBtn">
+
+                            <span class="btn-text">
+                                ✦ Predict House Value
+                            </span>
+
+                            <span class="loader"></span>
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+                {% if error %}
+
+                <div class="error-message">
+
+                    <span>!</span>
+
+                    <p>{{ error }}</p>
+
+                </div>
+
+                {% endif %}
+
+            </section>
+
+
+            <!-- =====================================
+                 Result Panel
+            ====================================== -->
+
+            <aside class="result-panel">
+
+                <div class="result-header">
+
+                    <div>
+
+                        <div class="section-label">
+                            PREDICTION RESULT
+                        </div>
+
+                        <h3>Estimated Value</h3>
+
+                    </div>
+
+                    <div class="result-icon">
+                        $
+                    </div>
+
+                </div>
+
+
+                {% if prediction is defined %}
+
+                <div class="prediction-result">
+
+                    <span class="result-caption">
+                        ESTIMATED MEDIAN HOUSE VALUE
+                    </span>
+
+                    <div class="price">
+                        ${{ "{:,.2f}".format(prediction) }}
+                    </div>
+
+                    <div class="result-line"></div>
+
+                    <p>
+                        Prediction generated by the trained
+                        California Housing machine learning model.
+                    </p>
+
+                </div>
+
+                {% else %}
+
+                <div class="empty-result">
+
+                    <div class="empty-icon">
+                        ✦
+                    </div>
+
+                    <h4>Awaiting Prediction</h4>
+
+                    <p>
+                        Enter the property details and click
+                        <strong>Predict House Value</strong>
+                        to generate an estimate.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+
+                <div class="result-info">
+
+                    <div class="info-item">
+
+                        <span class="info-icon">◈</span>
+
+                        <div>
+                            <small>MODEL</small>
+                            <strong>California Housing</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span class="info-icon">⚡</span>
+
+                        <div>
+                            <small>PREDICTION</small>
+                            <strong>Real-time</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span class="info-icon">✓</span>
+
+                        <div>
+                            <small>ENGINE</small>
+                            <strong>Scikit-learn</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+
+        <!-- Footer -->
+
+        <footer>
+
+            <span>
+                California Housing AI
+            </span>
+
+            <span>
+                •
+            </span>
+
+            <span>
+                Machine Learning Prediction System
+            </span>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+
+</html>
